@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { NativeModules, Text, View } from 'react-native';
 import {
 	auth,
 	toggleFeatureFlag,
@@ -13,6 +13,17 @@ import Card from '~/components/layout/Card';
 import { Button } from '~/components/primitive/Button';
 import { tw } from '~/lib/tailwind';
 import { SettingsStackScreenProps } from '~/navigation/tabs/SettingsStack';
+
+const { BookmarkDirectory, HelloModule } = NativeModules;
+
+const getMessage = async () => {
+	try {
+		const message = await HelloModule.Hello();
+		console.log(message); // Should log "Hello, world"
+	} catch (error) {
+		console.error(error);
+	}
+};
 
 const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 	const debugState = useDebugState();
@@ -70,6 +81,9 @@ const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 					}}
 				>
 					<Text style={tw`text-ink`}>Logout</Text>
+				</Button>
+				<Button onPress={async () => getMessage()}>
+					<Text style={tw`text-ink`}>Test Native Module Func</Text>
 				</Button>
 			</Card>
 		</View>
