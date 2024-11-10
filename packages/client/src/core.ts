@@ -16,6 +16,7 @@ export type Procedures = {
         { key: "cloud.syncGroups.leave", input: CloudSyncGroupPubId, result: null } | 
         { key: "cloud.syncGroups.list", input: never, result: CloudSyncGroupBaseData[] } | 
         { key: "cloud.syncGroups.remove_device", input: CloudSyncGroupsRemoveDeviceArgs, result: null } | 
+        { key: "devices.list", input: LibraryArgs<null>, result: Device[] } | 
         { key: "ephemeralFiles.getMediaData", input: string, result: MediaData | null } | 
         { key: "files.get", input: LibraryArgs<number>, result: ObjectWithFilePaths2 | null } | 
         { key: "files.getConvertibleImageExtensions", input: never, result: string[] } | 
@@ -60,7 +61,8 @@ export type Procedures = {
         { key: "tags.getForObject", input: LibraryArgs<number>, result: Tag[] } | 
         { key: "tags.getWithObjects", input: LibraryArgs<number[]>, result: { [key in number]: ({ object: { id: number }; date_created: string | null })[] } } | 
         { key: "tags.list", input: LibraryArgs<null>, result: Tag[] } | 
-        { key: "volumes.list", input: never, result: Volume[] },
+        { key: "volumes.list", input: LibraryArgs<null>, result: Volume[] } | 
+        { key: "volumes.listForLibrary", input: LibraryArgs<null>, result: Volume[] },
     mutations: 
         { key: "api.sendFeedback", input: Feedback, result: null } | 
         { key: "backups.backup", input: LibraryArgs<null>, result: string } | 
@@ -136,7 +138,9 @@ export type Procedures = {
         { key: "tags.create", input: LibraryArgs<TagCreateArgs>, result: Tag } | 
         { key: "tags.delete", input: LibraryArgs<number>, result: null } | 
         { key: "tags.update", input: LibraryArgs<TagUpdateArgs>, result: null } | 
-        { key: "toggleFeatureFlag", input: BackendFeature, result: null },
+        { key: "toggleFeatureFlag", input: BackendFeature, result: null } | 
+        { key: "volumes.track", input: LibraryArgs<VolumeFingerprint>, result: null } | 
+        { key: "volumes.unmount", input: LibraryArgs<number[]>, result: null },
     subscriptions: 
         { key: "cloud.listenCloudServicesNotifications", input: never, result: CloudP2PNotifyUser } | 
         { key: "invalidation.listen", input: never, result: InvalidateOperationEvent[] } | 
@@ -150,7 +154,8 @@ export type Procedures = {
         { key: "notifications.listen", input: never, result: Notification } | 
         { key: "p2p.events", input: never, result: P2PEvent } | 
         { key: "search.ephemeralPaths", input: LibraryArgs<EphemeralPathSearchArgs>, result: { entries: ExplorerItem[]; errors: Error[] } } | 
-        { key: "sync.active", input: LibraryArgs<null>, result: SyncStatus }
+        { key: "sync.active", input: LibraryArgs<null>, result: SyncStatus } | 
+        { key: "volumes.events", input: LibraryArgs<null>, result: VolumeEvent }
 };
 
 /**
@@ -210,6 +215,11 @@ export type CloudP2PNotifyUser = { kind: "ReceivedJoinSyncGroupRequest"; data: {
 export type CloudP2PTicket = bigint
 
 export type CloudP2PUserResponse = { kind: "AcceptDeviceInSyncGroup"; data: { ticket: CloudP2PTicket; accepted: BasicLibraryCreationArgs | null } }
+
+/**
+ * Represents the cloud storage provider
+ */
+export type CloudProvider = "SpacedriveCloud" | "GoogleDrive" | "Dropbox" | "OneDrive" | "ICloud" | "AmazonS3" | "Mega" | "Box" | "pCloud" | "Proton" | "Sync" | "Backblaze" | "Wasabi" | "DigitalOcean" | "Azure" | "OwnCloud" | "NextCloud" | "WebDAV"
 
 export type CloudSyncGroup = { pub_id: CloudSyncGroupPubId; latest_key_hash: CloudSyncKeyHash; library: CloudLibrary; devices: CloudDevice[]; total_sync_messages_bytes: bigint; total_space_files_bytes: bigint; created_at: string; updated_at: string }
 
@@ -281,6 +291,8 @@ export type CursorOrderItem<T> = { order: SortOrder; data: T }
 
 export type DefaultLocations = { desktop: boolean; documents: boolean; downloads: boolean; pictures: boolean; music: boolean; videos: boolean }
 
+export type Device = { id: number; pub_id: number[]; name: string | null; os: number | null; hardware_model: number | null; timestamp: bigint | null; date_created: string | null; date_deleted: string | null }
+
 export type DeviceOS = "Linux" | "Windows" | "MacOS" | "iOS" | "Android"
 
 /**
@@ -289,7 +301,26 @@ export type DeviceOS = "Linux" | "Windows" | "MacOS" | "iOS" | "Android"
  */
 export type DiscoveryMethod = "Relay" | "Local" | "Manual"
 
-export type DiskType = "SSD" | "HDD" | "Removable"
+/**
+ * Represents the type of physical storage device
+ */
+export type DiskType = 
+/**
+ * Solid State Drive
+ */
+"SSD" | 
+/**
+ * Hard Disk Drive
+ */
+"HDD" | 
+/**
+ * Virtual disk type
+ */
+"Virtual" | 
+/**
+ * Unknown or virtual disk type
+ */
+"Unknown"
 
 export type DoubleClickAction = "openFile" | "quickPreview"
 
@@ -355,6 +386,35 @@ export type FilePathObjectCursor = { dateAccessed: CursorOrderItem<string> } | {
 export type FilePathOrder = { field: "name"; value: SortOrder } | { field: "sizeInBytes"; value: SortOrder } | { field: "dateCreated"; value: SortOrder } | { field: "dateModified"; value: SortOrder } | { field: "dateIndexed"; value: SortOrder } | { field: "object"; value: ObjectOrder }
 
 export type FilePathSearchArgs = { take?: number | null; orderAndPagination?: OrderAndPagination<number, FilePathOrder, FilePathCursor> | null; filters?: SearchFilterArgs[]; groupDirectories?: boolean }
+
+/**
+ * Represents the filesystem type of the volume
+ */
+export type FileSystem = 
+/**
+ * Windows NTFS filesystem
+ */
+"NTFS" | 
+/**
+ * FAT32 filesystem
+ */
+"FAT32" | 
+/**
+ * Linux EXT4 filesystem
+ */
+"EXT4" | 
+/**
+ * Apple APFS filesystem
+ */
+"APFS" | 
+/**
+ * ExFAT filesystem
+ */
+"ExFAT" | 
+/**
+ * Other/unknown filesystem type
+ */
+{ Other: string }
 
 export type Flash = { 
 /**
@@ -528,6 +588,27 @@ export type MediaDate = string
 export type MediaLocation = { latitude: number; longitude: number; pluscode: PlusCode; altitude: number | null; direction: number | null }
 
 export type Metadata = { album: string | null; album_artist: string | null; artist: string | null; comment: string | null; composer: string | null; copyright: string | null; creation_time: string | null; date: string | null; disc: number | null; encoder: string | null; encoded_by: string | null; filename: string | null; genre: string | null; language: string | null; performer: string | null; publisher: string | null; service_name: string | null; service_provider: string | null; title: string | null; track: number | null; variant_bit_rate: number | null; custom: { [key in string]: string } }
+
+/**
+ * Represents how the volume is mounted in the system
+ */
+export type MountType = 
+/**
+ * System/boot volume
+ */
+"System" | 
+/**
+ * External/removable volume
+ */
+"External" | 
+/**
+ * Network-attached volume
+ */
+"Network" | 
+/**
+ * Virtual/container volume
+ */
+"Virtual" | { Cloud: CloudProvider }
 
 export type NodeConfigP2P = { discovery?: P2PDiscoveryState; port: Port; disabled: boolean; disable_ipv6: boolean; disable_relay: boolean; enable_remote_access: boolean; 
 /**
@@ -725,4 +806,110 @@ export type UpdateThumbnailerPreferences = Record<string, never>
 
 export type VideoProps = { pixel_format: string | null; color_range: string | null; bits_per_channel: number | null; color_space: string | null; color_primaries: string | null; color_transfer: string | null; field_order: string | null; chroma_location: string | null; width: number; height: number; aspect_ratio_num: number | null; aspect_ratio_den: number | null; properties: string[] }
 
-export type Volume = { name: string; mount_points: string[]; total_capacity: string; available_capacity: string; disk_type: DiskType; file_system: string | null; is_root_filesystem: boolean }
+/**
+ * Represents a physical or virtual storage volume in the system
+ */
+export type Volume = { 
+/**
+ * Fingerprint of the volume as a hash of its properties, not persisted to the database
+ * Used as the unique identifier for a volume in this module
+ */
+fingerprint: VolumeFingerprint | null; 
+/**
+ * Database ID (None if not yet committed to database)
+ */
+id: number | null; 
+/**
+ * Unique public identifier
+ */
+pub_id: number[] | null; 
+/**
+ * Database ID of the device this volume is attached to, if any
+ */
+device_id: number | null; 
+/**
+ * Human-readable volume name
+ */
+name: string; 
+/**
+ * Type of mount (system, external, etc)
+ */
+mount_type: MountType; 
+/**
+ * Path where the volume is mounted
+ */
+mount_point: string[]; 
+/**
+ * for APFS volumes like Macintosh HD, additional mount points are returned
+ */
+mount_points: string[]; 
+/**
+ * Whether the volume is currently mounted
+ */
+is_mounted: boolean; 
+/**
+ * Type of storage device (SSD, HDD, etc)
+ */
+disk_type: DiskType; 
+/**
+ * Filesystem type (NTFS, EXT4, etc)
+ */
+file_system: FileSystem; 
+/**
+ * Whether the volume is mounted read-only
+ */
+read_only: boolean; 
+/**
+ * Current error status if any
+ */
+error_status: string | null; 
+/**
+ * Read speed in megabytes per second
+ */
+read_speed_mbps: bigint | null; 
+/**
+ * Write speed in megabytes per second
+ */
+write_speed_mbps: bigint | null; 
+/**
+ * Total storage capacity in bytes
+ */
+total_bytes_capacity: string; 
+/**
+ * Available storage space in bytes
+ */
+total_bytes_available: string }
+
+/**
+ * Events emitted by the Volume Manager when volume state changes
+ */
+export type VolumeEvent = 
+/**
+ * Emitted when a new volume is discovered and added
+ */
+{ VolumeAdded: Volume } | 
+/**
+ * Emitted when a volume is removed from the system
+ */
+{ VolumeRemoved: Volume } | 
+/**
+ * Emitted when a volume's properties are updated
+ */
+{ VolumeUpdated: { old: Volume; new: Volume } } | 
+/**
+ * Emitted when a volume's speed test completes
+ */
+{ VolumeSpeedTested: { fingerprint: VolumeFingerprint; read_speed: bigint; write_speed: bigint } } | 
+/**
+ * Emitted when a volume's mount status changes
+ */
+{ VolumeMountChanged: { fingerprint: VolumeFingerprint; is_mounted: boolean } } | 
+/**
+ * Emitted when a volume encounters an error
+ */
+{ VolumeError: { fingerprint: VolumeFingerprint; error: string } }
+
+/**
+ * A fingerprint of a volume, used to identify it when it is not persisted in the database
+ */
+export type VolumeFingerprint = number[]

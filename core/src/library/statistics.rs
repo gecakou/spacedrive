@@ -1,6 +1,6 @@
-use crate::{api::utils::get_size, invalidate_query, library::Library, volume::get_volumes, Node};
+use crate::{api::utils::get_size, invalidate_query, library::Library, Node};
 
-use sd_prisma::prisma::{statistics, storage_statistics};
+use sd_prisma::prisma::{statistics, volume};
 use sd_utils::db::size_in_bytes_from_db;
 
 use chrono::Utc;
@@ -14,32 +14,40 @@ pub async fn update_library_statistics(
 ) -> Result<statistics::Data, LibraryManagerError> {
 	let (mut total_capacity, mut available_capacity) = library
 		.db
-		.storage_statistics()
+		.volume()
 		.find_many(vec![])
-		.select(storage_statistics::select!({ total_capacity available_capacity }))
+		.select(volume::select!({ total_bytes_capacity total_bytes_available }))
 		.exec()
 		.await?
 		.into_iter()
 		.fold((0, 0), |(mut total, mut available), stat| {
-			total += stat.total_capacity as u64;
-			available += stat.available_capacity as u64;
+			total += stat
+				.total_bytes_capacity
+				.unwrap_or_else(|| "0".to_string())
+				.parse::<u64>()
+				.unwrap_or(0);
+			available += stat
+				.total_bytes_available
+				.unwrap_or_else(|| "0".to_string())
+				.parse::<u64>()
+				.unwrap_or(0);
 			(total, available)
 		});
 
-	if total_capacity == 0 && available_capacity == 0 {
-		// Failed to fetch storage statistics from database, so we compute from local volumes
-		let volumes = get_volumes().await;
+	// if total_capacity == 0 && available_capacity == 0 {
+	// 	// Failed to fetch storage statistics from database, so we compute from local volumes
+	// 	let volumes = get_volumes().await;
 
-		let mut local_total_capacity: u64 = 0;
-		let mut local_available_capacity: u64 = 0;
-		for volume in volumes {
-			local_total_capacity += volume.total_capacity;
-			local_available_capacity += volume.available_capacity;
-		}
+	// 	let mut local_total_capacity: u64 = 0;
+	// 	let mut local_available_capacity: u64 = 0;
+	// 	for volume in volumes {
+	// 		local_total_capacity += volume.total_bytes_capacity;
+	// 		local_available_capacity += volume.total_bytes_available;
+	// 	}
 
-		total_capacity = local_total_capacity;
-		available_capacity = local_available_capacity;
-	}
+	// 	total_capacity = local_total_capacity;
+	// 	available_capacity = local_available_capacity;
+	// }
 
 	let total_bytes_used = total_capacity - available_capacity;
 
