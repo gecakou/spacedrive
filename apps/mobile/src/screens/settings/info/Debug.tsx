@@ -12,17 +12,8 @@ import { Button } from '~/components/primitive/Button';
 import { tw } from '~/lib/tailwind';
 import { SettingsStackScreenProps } from '~/navigation/tabs/SettingsStack';
 import { getTokens } from '~/utils';
+import * as NativeFunctions from '@sd/native-functions';
 
-const { BookmarkDirectory, HelloModule } = NativeModules;
-
-const getMessage = async () => {
-	try {
-		const message = await HelloModule.Hello();
-		console.log(message); // Should log "Hello, world"
-	} catch (error) {
-		console.error(error);
-	}
-};
 
 const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 	const debugState = useDebugState();

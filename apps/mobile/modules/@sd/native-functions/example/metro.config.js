@@ -19,7 +19,7 @@ config.resolver.nodeModulesPaths = [
 ];
 
 config.resolver.extraNodeModules = {
-  'my-module': '..',
+  '@sd/native-functions': '..',
 };
 
 config.watchFolders = [path.resolve(__dirname, '..')];

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-module-example",
-    "slug": "my-module-example",
+    "name": "native-functions-example",
+    "slug": "native-functions-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,14 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.spacedrive.utils.native.example"
+      "bundleIdentifier": "com.spacedrive.utils.native.example"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.spacedrive.utils.native.example"
+      "package": "com.spacedrive.utils.native.example"
     },
     "web": {
       "favicon": "./assets/favicon.png"
