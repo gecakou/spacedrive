@@ -140,7 +140,7 @@ const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 				>
 					<Text style={tw`text-ink`}>Request Join Sync Group</Text>
 				</Button>
-				<Button onPress={async () => getMessage()}>
+				<Button onPress={async () => console.log(NativeFunctions.hello())}>
 					<Text style={tw`text-ink`}>Test Native Module Func</Text>
 				</Button>
 			</Card>
