@@ -11,7 +11,7 @@
   },
   "android": {
     "modules": [
-      "app.spacedrive.nativemodules.NativeModulesModule"
+      "com.spacedrive.nativemodules.NativeModulesModule"
     ]
   }
 }

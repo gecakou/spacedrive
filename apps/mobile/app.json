@@ -79,8 +79,5 @@
 				"./scripts/withAndroidIntent.js"
 			]
 		]
-	},
-	"autolinking": {
-		"nativeModulesDir": "../../packages/native-modules"
 	}
 }

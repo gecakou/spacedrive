@@ -1,4 +1,4 @@
-package app.spacedrive.nativemodules
+package com.spacedrive.nativemodules
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition

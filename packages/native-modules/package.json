@@ -1,5 +1,5 @@
 {
-	"name": "@sd/native-modules",
+	"name": "native-modules",
 	"version": "0.1.0",
 	"description": "Spacedrive's Native Modules",
 	"main": "build/index.js",

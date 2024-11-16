@@ -1,4 +1,4 @@
-package app.spacedrive.nativemodules
+package com.spacedrive.nativemodules
 
 import android.content.Context
 import android.webkit.WebView
