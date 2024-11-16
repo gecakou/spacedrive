@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "tvos", "android", "web"],
-  "ios": {
-    "modules": ["NativeFunctionsModule"]
-  },
-  "android": {
-    "modules": ["com.spacedrive.utils.native.NativeFunctionsModule"]
-  }
-}

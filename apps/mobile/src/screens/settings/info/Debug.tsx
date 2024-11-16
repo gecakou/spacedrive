@@ -1,5 +1,6 @@
+import * as NativeModules from '@sd/native-modules';
 import React from 'react';
-import { NativeModules, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
 	useBridgeMutation,
 	useBridgeQuery,
@@ -12,8 +13,6 @@ import { Button } from '~/components/primitive/Button';
 import { tw } from '~/lib/tailwind';
 import { SettingsStackScreenProps } from '~/navigation/tabs/SettingsStack';
 import { getTokens } from '~/utils';
-import * as NativeFunctions from '@sd/native-functions';
-
 
 const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 	const debugState = useDebugState();
@@ -140,7 +139,7 @@ const DebugScreen = ({ navigation }: SettingsStackScreenProps<'Debug'>) => {
 				>
 					<Text style={tw`text-ink`}>Request Join Sync Group</Text>
 				</Button>
-				<Button onPress={async () => console.log(NativeFunctions.hello())}>
+				<Button onPress={async () => console.log(NativeModules.default.hello())}>
 					<Text style={tw`text-ink`}>Test Native Module Func</Text>
 				</Button>
 			</Card>

@@ -1,11 +1,11 @@
-# @sd/native-functions
+# @sd/native-modules
 
-Native Functions for Spacedrive's React Native app
+Spacedrive's Native Modules
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/spacedrive#readme.md)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/spacedrive#readme/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/spacedrive#readme/)
 
 # Installation in managed Expo projects
 
@@ -18,11 +18,17 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install @sd/native-functions
+npm install @sd/native-modules
 ```
 
+### Configure for Android
 
 
+
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

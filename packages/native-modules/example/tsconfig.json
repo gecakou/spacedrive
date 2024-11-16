@@ -3,8 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@sd/native-functions": ["../src/index"],
-      "@sd/native-functions/*": ["../src/*"]
+      "native-modules": ["../src/index"],
+      "native-modules/*": ["../src/*"]
     }
   }
 }

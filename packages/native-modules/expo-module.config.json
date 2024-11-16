@@ -1,0 +1,17 @@
+{
+  "platforms": [
+    "apple",
+    "android",
+    "web"
+  ],
+  "apple": {
+    "modules": [
+      "NativeModulesModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "app.spacedrive.nativemodules.NativeModulesModule"
+    ]
+  }
+}
